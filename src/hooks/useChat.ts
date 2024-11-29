@@ -3,6 +3,8 @@ import { ChatState, Message } from '../types/chat';
 import { WebSocketService } from '../services/socket';
 
 export function useChat() {
+  // The useState hook initializes the chatState with a default value of type ChatState.
+  // This state holds the current messages in the chat and a boolean indicating if the assistant is typing.
   const [chatState, setChatState] = useState<ChatState>({
     messages: [
       {
