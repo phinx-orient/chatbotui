@@ -8,62 +8,54 @@ export function useChat() {
     isTyping: false,
   });
 
-  useEffect(() => {
-    const clientId = Date.now().toString(); // Generate a unique client ID
-    const ws = WebSocketService.getInstance(clientId); // Pass the client ID to the WebSocketService
+  const conversationId = Date.now().toString();
+  const webSocketService = WebSocketService.getInstance(conversationId);
 
-    // Subscribe to thought updates
-    ws.subscribeToThoughts((thought, messageId) => {
-      console.log(
-        "Received thought update:",
-        thought,
-        "for messageId:",
-        messageId
-      );
+  useEffect(() => {
+    const handleThoughtUpdate = (thought: string, messageId: string) => {
       setChatState((prev) => ({
         ...prev,
         messages: prev.messages.map((msg) =>
           msg.id === messageId ? { ...msg, thought } : msg
         ),
-        isTyping: true, // Keep typing indicator while thoughts are being processed
+        isTyping: true,
       }));
-    });
+    };
 
-    // Subscribe to responses
-    ws.subscribeToResponses((message) => {
-      console.log("Received bot response:", message);
+    const handleBotResponse = (message: Message) => {
       setChatState((prev) => ({
         ...prev,
         messages: [...prev.messages, message],
         isTyping: false,
       }));
-    });
+    };
 
-    // Log when the WebSocket is connected
-    console.log("WebSocket connection established.");
+    webSocketService.subscribeToThoughts(handleThoughtUpdate);
+    webSocketService.subscribeToResponses(handleBotResponse);
 
     return () => {
-      console.log("Disconnecting from WebSocket...");
-      ws.disconnect();
+      webSocketService.disconnect();
     };
-  }, []);
+  }, [webSocketService]);
 
-  const sendMessage = useCallback((content: string) => {
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content,
-    };
+  const sendMessage = useCallback(
+    (content: string) => {
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        role: "user",
+        content,
+      };
 
-    console.log("Sending user message:", userMessage);
-    setChatState((prev) => ({
-      ...prev,
-      messages: [...prev.messages, userMessage],
-      isTyping: true,
-    }));
+      setChatState((prev) => ({
+        ...prev,
+        messages: [...prev.messages, userMessage],
+        isTyping: true,
+      }));
 
-    WebSocketService.getInstance(userMessage.id).sendMessage(content); // Use the userMessage ID for sending
-  }, []);
+      webSocketService.sendMessage(content);
+    },
+    [webSocketService]
+  );
 
   return { messages: chatState.messages, sendMessage };
 }

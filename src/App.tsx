@@ -3,7 +3,7 @@ import { ChatInput } from './components/ChatInput';
 import { useChat } from './hooks/useChat';
 
 function App() {
-  const { messages, sendMessage } = useChat(); // Removed isTyping from destructuring
+  const { messages, sendMessage } = useChat();
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col"> 
@@ -17,7 +17,7 @@ function App() {
         <div className="p-4 border-t">
           <ChatInput 
             onSendMessage={sendMessage}
-            disabled={false} // Set disabled to false since isTyping is no longer available
+            disabled={false}
           />
         </div>
       </div>
