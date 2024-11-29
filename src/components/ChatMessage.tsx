@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Message } from '../types/chat';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import { Bot, User } from 'lucide-react'; // Import Bot and User components
+import { Bot, ChevronDown, ChevronUp } from 'lucide-react';
+import { User } from 'lucide-react'; 
 
 interface ChatMessageProps {
   message: Message;
@@ -9,21 +9,7 @@ interface ChatMessageProps {
 
 export function ChatMessage({ message }: ChatMessageProps) {
   const [isThoughtExpanded, setIsThoughtExpanded] = useState(false);
-  const [currentThought, setCurrentThought] = useState(message.thought || ""); // Initialize with an empty string if no thought
   const isBot = message.role === 'assistant';
-
-  useEffect(() => {
-    if (message.thought) {
-      setCurrentThought(message.thought);
-      // Auto-expand thoughts for new messages
-      setIsThoughtExpanded(true);
-      // Auto-collapse after 5 seconds
-      const timer = setTimeout(() => {
-        setIsThoughtExpanded(false);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [message.thought]);
 
   return (
     <div className={`flex gap-3 ${isBot ? 'bg-blue-50' : 'bg-white'} p-4 rounded-lg transition-all duration-200`}>
@@ -42,9 +28,10 @@ export function ChatMessage({ message }: ChatMessageProps) {
       <div className="flex-1">
         <div className="prose max-w-none">
           <p className="text-gray-800">{message.content}</p>
+          <p className="text-sm text-gray-500">{message.type}</p>
         </div>
         
-        {currentThought && (
+        {isBot && message.thought && (
           <div className="mt-2">
             <button
               onClick={() => setIsThoughtExpanded(!isThoughtExpanded)}
@@ -65,7 +52,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
             
             {isThoughtExpanded && (
               <div className="mt-2 p-3 bg-blue-100 rounded-md animate-fadeIn">
-                <p className="text-sm text-gray-700">{currentThought}</p>
+                <p className="text-sm text-gray-700">{message.thought}</p>
               </div>
             )}
           </div>

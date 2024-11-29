@@ -12,7 +12,7 @@ function App() {
           <h1 className="text-white text-xl font-semibold">Neuron Ba Miền</h1>
         </div>
         
-        <ChatContainer messages={messages} /> {/* Display messages here */}
+        <ChatContainer messages={messages} />
         
         <div className="p-4 border-t">
           <ChatInput 

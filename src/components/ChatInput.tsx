@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Send } from 'lucide-react';
 
 interface ChatInputProps {
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string, conversationId: string) => void;
   disabled?: boolean;
 }
 
@@ -12,7 +12,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim()) {
-      onSendMessage(input.trim());
+      onSendMessage(input.trim(), "defaultConversationId"); // Pass conversation ID
       setInput('');
     }
   };

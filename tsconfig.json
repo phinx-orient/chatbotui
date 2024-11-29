@@ -1,4 +1,12 @@
 {
+  "compilerOptions": {
+    "target": "ES2020", // or your preferred target
+    "module": "ESNext", // or your preferred module system
+    "lib": ["DOM", "ES2020"], // Include DOM for WebSocket types
+    "strict": true, // Enable strict type checking
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "forceConsistentCasingInFileNames": true // Ensure consistent casing in file names
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

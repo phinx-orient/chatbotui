@@ -1,24 +1,23 @@
-// src/services/socket.ts
 import { Message } from "../types/chat";
+
 export class WebSocketService {
-  private socket!: WebSocket;
+  private socket!: WebSocket; // Ensure this is typed as WebSocket
   private static instance: WebSocketService;
   private handleThoughtUpdate: (thought: string, messageId: string) => void =
     () => {};
   private handleBotResponse: (message: Message) => void = () => {};
+  private messageHandler: (data: any) => void = () => {}; // Message handler
 
   private constructor(conversationId: string) {
     console.log("Initializing WebSocketService...");
-    this.connect(conversationId); // Automatically connect when the service is initialized
+    this.connect(conversationId);
   }
 
   private connect(conversationId: string): void {
-    // Connect to the FastAPI WebSocket server
     this.socket = new WebSocket(`ws://localhost:8081/ws/${conversationId}`);
 
     this.socket.onopen = () => {
       console.log("WebSocket connection established.");
-      this.socket.send(conversationId); // Send the conversation ID to the server
     };
 
     this.socket.onclose = (event) => {
@@ -31,13 +30,7 @@ export class WebSocketService {
 
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (data.type === "thought_update") {
-        console.log("Received thought update:", data);
-        this.handleThoughtUpdate(data.thought, data.messageId);
-      } else if (data.type === "bot_response") {
-        console.log("Received bot response:", data);
-        this.handleBotResponse(data);
-      }
+      this.messageHandler(data); // Call the registered message handler
     };
   }
 
@@ -48,23 +41,29 @@ export class WebSocketService {
     return WebSocketService.instance;
   }
 
-  public sendMessage(content: string): void {
-    console.log("Sending message:", content);
-    this.socket.send(content);
-  }
-
-  public disconnect(): void {
-    console.log("Disconnecting from WebSocket server...");
-    this.socket.close();
+  public onMessage(handler: (data: any) => void) {
+    this.messageHandler = handler; // Set the message handler
   }
 
   public subscribeToThoughts(
     callback: (thought: string, messageId: string) => void
-  ): void {
-    this.handleThoughtUpdate = callback; // Assign the callback to handle thought updates
+  ) {
+    this.handleThoughtUpdate = callback;
   }
 
-  public subscribeToResponses(callback: (message: Message) => void): void {
-    this.handleBotResponse = callback; // Assign the callback to handle bot responses
+  public subscribeToResponses(callback: (message: Message) => void) {
+    this.handleBotResponse = callback;
+  }
+
+  public disconnect() {
+    this.socket.close();
+  }
+
+  public sendMessage(message: string) {
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(message); // Ensure the socket is open before sending
+    } else {
+      console.error("WebSocket is not open. Cannot send message.");
+    }
   }
 }
