@@ -1,4 +1,3 @@
-
 import { ChatMessage } from './ChatMessage';
 import { Message } from '../types/chat';
 

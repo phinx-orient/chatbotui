@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { WebSocketService } from "../services/socket";
 import { Message, ChatState } from "../types/chat";
 
@@ -49,7 +49,6 @@ export function useChat() {
       setChatState((prev) => ({
         ...prev,
         messages: [...prev.messages, userMessage],
-        isTyping: true,
       }));
 
       webSocketService.sendMessage(content);
@@ -57,5 +56,8 @@ export function useChat() {
     [webSocketService]
   );
 
-  return { messages: chatState.messages, sendMessage };
+  return {
+    messages: chatState.messages,
+    sendMessage,
+  };
 }

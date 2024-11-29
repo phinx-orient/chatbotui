@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp, Bot, User } from 'lucide-react';
-import type { Message } from '../types/chat';
+import React, { useEffect, useState } from 'react';
+import { Message } from '../types/chat';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import { Bot, User } from 'lucide-react'; // Import Bot and User components
 
 interface ChatMessageProps {
   message: Message;
