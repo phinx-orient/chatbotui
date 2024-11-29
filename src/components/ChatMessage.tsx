@@ -1,4 +1,3 @@
-// src/components/ChatMessage.tsx
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Bot, User } from 'lucide-react';
 import type { Message } from '../types/chat';
@@ -9,7 +8,7 @@ interface ChatMessageProps {
 
 export function ChatMessage({ message }: ChatMessageProps) {
   const [isThoughtExpanded, setIsThoughtExpanded] = useState(false);
-  const [currentThought, setCurrentThought] = useState(message.thought);
+  const [currentThought, setCurrentThought] = useState(message.thought || ""); // Initialize with an empty string if no thought
   const isBot = message.role === 'assistant';
 
   useEffect(() => {

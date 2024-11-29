@@ -1,15 +1,17 @@
-// src/services/socket.ts
 import { Message } from "../types/chat";
 
 export class WebSocketService {
   private socket: WebSocket;
   private static instance: WebSocketService;
+  private handleThoughtUpdate: (thought: string, messageId: string) => void =
+    () => {};
+  private handleBotResponse: (message: Message) => void = () => {};
 
   private constructor(clientId: string) {
     console.log("Initializing WebSocketService...");
 
     // Connect to the FastAPI WebSocket server
-    this.socket = new WebSocket("ws://localhost:8081/ws");
+    this.socket = new WebSocket(`ws://localhost:8081/ws/${clientId}`);
 
     this.socket.onopen = () => {
       console.log("WebSocket connection established.");
@@ -51,14 +53,6 @@ export class WebSocketService {
   public disconnect(): void {
     console.log("Disconnecting from WebSocket server...");
     this.socket.close();
-  }
-
-  private handleThoughtUpdate(thought: string, messageId: string) {
-    // Implement your logic to handle thought updates
-  }
-
-  private handleBotResponse(message: Message) {
-    // Implement your logic to handle bot responses
   }
 
   public subscribeToThoughts(

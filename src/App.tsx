@@ -1,4 +1,3 @@
-// src/App.tsx
 import { ChatContainer } from './components/ChatContainer';
 import { ChatInput } from './components/ChatInput';
 import { useChat } from './hooks/useChat';
@@ -13,7 +12,7 @@ function App() {
           <h1 className="text-white text-xl font-semibold">Neuron Ba Miền</h1>
         </div>
         
-        <ChatContainer messages={messages} /> {/* Removed isTyping prop */}
+        <ChatContainer messages={messages} /> {/* Display messages here */}
         
         <div className="p-4 border-t">
           <ChatInput 

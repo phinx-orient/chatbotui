@@ -1,4 +1,3 @@
-// src/hooks/useChat.ts
 import { useCallback, useEffect, useState } from "react";
 import { WebSocketService } from "../services/socket";
 import { Message, ChatState } from "../types/chat";
