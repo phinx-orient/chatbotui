@@ -1,46 +1,50 @@
-import { useState, useEffect, useCallback } from 'react';
-import { ChatState, Message } from '../types/chat';
-import { WebSocketService } from '../services/socket';
+// src/hooks/useChat.ts
+import { useCallback, useEffect, useState } from "react";
+import { WebSocketService } from "../services/socket";
+import { Message, ChatState } from "../types/chat";
 
 export function useChat() {
-  // The useState hook initializes the chatState with a default value of type ChatState.
-  // This state holds the current messages in the chat and a boolean indicating if the assistant is typing.
   const [chatState, setChatState] = useState<ChatState>({
-    messages: [
-      {
-        id: '1',
-        role: 'assistant',
-        content: 'Hello! How can I help you today?',
-        thought: 'Initiating conversation with a friendly greeting.'
-      }
-    ],
-    isTyping: false
+    messages: [],
+    isTyping: false,
   });
 
   useEffect(() => {
-    const ws = WebSocketService.getInstance();
+    const clientId = Date.now().toString(); // Generate a unique client ID
+    const ws = WebSocketService.getInstance(clientId); // Pass the client ID to the WebSocketService
 
+    // Subscribe to thought updates
     ws.subscribeToThoughts((thought, messageId) => {
-      setChatState(prev => ({
+      console.log(
+        "Received thought update:",
+        thought,
+        "for messageId:",
+        messageId
+      );
+      setChatState((prev) => ({
         ...prev,
-        messages: prev.messages.map(msg =>
-          msg.id === messageId 
-            ? { ...msg, thought } 
-            : msg
+        messages: prev.messages.map((msg) =>
+          msg.id === messageId ? { ...msg, thought } : msg
         ),
-        isTyping: true // Keep typing indicator while thoughts are being processed
+        isTyping: true, // Keep typing indicator while thoughts are being processed
       }));
     });
 
+    // Subscribe to responses
     ws.subscribeToResponses((message) => {
-      setChatState(prev => ({
+      console.log("Received bot response:", message);
+      setChatState((prev) => ({
         ...prev,
         messages: [...prev.messages, message],
-        isTyping: false
+        isTyping: false,
       }));
     });
 
+    // Log when the WebSocket is connected
+    console.log("WebSocket connection established.");
+
     return () => {
+      console.log("Disconnecting from WebSocket...");
       ws.disconnect();
     };
   }, []);
@@ -48,22 +52,19 @@ export function useChat() {
   const sendMessage = useCallback((content: string) => {
     const userMessage: Message = {
       id: Date.now().toString(),
-      role: 'user',
-      content
+      role: "user",
+      content,
     };
 
-    setChatState(prev => ({
+    console.log("Sending user message:", userMessage);
+    setChatState((prev) => ({
       ...prev,
       messages: [...prev.messages, userMessage],
-      isTyping: true
+      isTyping: true,
     }));
 
-    WebSocketService.getInstance().sendMessage(content);
+    WebSocketService.getInstance(userMessage.id).sendMessage(content); // Use the userMessage ID for sending
   }, []);
 
-  return {
-    messages: chatState.messages,
-    isTyping: chatState.isTyping,
-    sendMessage
-  };
+  return { messages: chatState.messages, sendMessage };
 }

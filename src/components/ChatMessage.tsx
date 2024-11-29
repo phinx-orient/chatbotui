@@ -1,3 +1,4 @@
+// src/components/ChatMessage.tsx
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Bot, User } from 'lucide-react';
 import type { Message } from '../types/chat';

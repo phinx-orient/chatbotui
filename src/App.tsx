@@ -1,3 +1,4 @@
+// src/App.tsx
 import { ChatContainer } from './components/ChatContainer';
 import { ChatInput } from './components/ChatInput';
 import { useChat } from './hooks/useChat';

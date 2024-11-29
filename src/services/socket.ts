@@ -1,50 +1,73 @@
-import { io, Socket } from 'socket.io-client';
-import { Message } from '../types/chat';
+// src/services/socket.ts
+import { Message } from "../types/chat";
 
 export class WebSocketService {
-  private socket: Socket;
+  private socket: WebSocket;
   private static instance: WebSocketService;
 
-  private constructor() {
-    // Connect to the WebSocket server running locally
-    this.socket = io('http://localhost:3000', {
-      transports: ['websocket'],
-      autoConnect: true
-    });
+  private constructor(clientId: string) {
+    console.log("Initializing WebSocketService...");
 
-    this.socket.on('connect', () => {
-      console.log('Connected to WebSocket server');
-    });
+    // Connect to the FastAPI WebSocket server
+    this.socket = new WebSocket("ws://localhost:8081/ws");
 
-    this.socket.on('connect_error', (error) => {
-      console.error('WebSocket connection error:', error);
-    });
+    this.socket.onopen = () => {
+      console.log("WebSocket connection established.");
+      this.socket.send(clientId); // Send the client ID to the server
+    };
+
+    this.socket.onclose = (event) => {
+      console.log("WebSocket connection closed:", event);
+    };
+
+    this.socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    this.socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === "thought_update") {
+        console.log("Received thought update:", data);
+        this.handleThoughtUpdate(data.thought, data.messageId);
+      } else if (data.type === "bot_response") {
+        console.log("Received bot response:", data);
+        this.handleBotResponse(data);
+      }
+    };
   }
 
-  public static getInstance(): WebSocketService {
+  public static getInstance(clientId: string): WebSocketService {
     if (!WebSocketService.instance) {
-      WebSocketService.instance = new WebSocketService();
+      WebSocketService.instance = new WebSocketService(clientId);
     }
     return WebSocketService.instance;
   }
 
-  public subscribeToThoughts(callback: (thought: string, messageId: string) => void): void {
-    this.socket.on('thought_update', ({ thought, messageId }) => {
-      callback(thought, messageId);
-    });
-  }
-
   public sendMessage(content: string): void {
-    this.socket.emit('user_message', { content });
-  }
-
-  public subscribeToResponses(callback: (message: Message) => void): void {
-    this.socket.on('bot_response', (message: Message) => {
-      callback(message);
-    });
+    console.log("Sending message:", content);
+    this.socket.send(content);
   }
 
   public disconnect(): void {
-    this.socket.disconnect();
+    console.log("Disconnecting from WebSocket server...");
+    this.socket.close();
+  }
+
+  private handleThoughtUpdate(thought: string, messageId: string) {
+    // Implement your logic to handle thought updates
+  }
+
+  private handleBotResponse(message: Message) {
+    // Implement your logic to handle bot responses
+  }
+
+  public subscribeToThoughts(
+    callback: (thought: string, messageId: string) => void
+  ): void {
+    this.handleThoughtUpdate = callback; // Assign the callback to handle thought updates
+  }
+
+  public subscribeToResponses(callback: (message: Message) => void): void {
+    this.handleBotResponse = callback; // Assign the callback to handle bot responses
   }
 }
