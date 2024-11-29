@@ -18,6 +18,7 @@ export function ChatContainer({ messages }: ChatContainerProps) {
             <ChatMessage key={message.id} message={message} />
           );
         }
+        return null; // Ensure to return null for other message types
       })}
       {thoughtUpdates.length > 0 && (
         <ThoughtUpdateContainer thoughtUpdates={thoughtUpdates} />
@@ -45,4 +46,4 @@ const ThoughtUpdateContainer: React.FC<{ thoughtUpdates: Message[] }> = ({ thoug
       </div>
     </div>
   );
-};
+}
