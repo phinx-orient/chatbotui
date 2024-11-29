@@ -13,7 +13,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
     e.preventDefault();
     if (input.trim()) {
       onSendMessage(input.trim(), "defaultConversationId"); // Pass conversation ID
-      setInput('');
+      setInput(''); // Clear input after sending
     }
   };
 
