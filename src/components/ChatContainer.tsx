@@ -11,16 +11,16 @@ export function ChatContainer({ messages }: ChatContainerProps) {
       {messages.map((message) => {
         // Check if the message is a bot response
         if (message.type === "bot_response") {
-          // Find the next thought update if it exists
-          const thoughtUpdate = messages.find(
-            (msg) => msg.type === "thought_update" && msg.conversationId === message.conversationId
-          )?.content;
+          // Find all thought updates that correspond to this bot response
+          const thoughtUpdates = messages
+            .filter(msg => msg.type === "thought_update" && msg.conversationId === message.conversationId)
+            .map(msg => msg.content); // Get all matching thought updates
 
           return (
             <ChatMessage 
               key={`${message.conversationId}-${message.content}`} // Ensure unique key
               message={message} 
-              thoughtUpdate={thoughtUpdate} 
+              thoughtUpdates={thoughtUpdates} // Pass all thought updates
             />
           );
         }

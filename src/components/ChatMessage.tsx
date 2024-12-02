@@ -5,10 +5,10 @@ import { User } from 'lucide-react';
 
 interface ChatMessageProps {
   message: Message;
-  thoughtUpdate?: string; // Optional prop for thought updates
+  thoughtUpdates?: string[]; // Array of thought updates
 }
 
-export function ChatMessage({ message, thoughtUpdate }: ChatMessageProps) {
+export function ChatMessage({ message, thoughtUpdates }: ChatMessageProps) {
   const [isThoughtExpanded, setIsThoughtExpanded] = useState(false);
   const isBot = message.role === 'assistant';
 
@@ -33,7 +33,7 @@ export function ChatMessage({ message, thoughtUpdate }: ChatMessageProps) {
           <p className="text-sm text-gray-500">{message.type}</p>
         </div>
         
-        {isBot && thoughtUpdate && (
+        {isBot && thoughtUpdates && thoughtUpdates.length > 0 && (
           <div className="mt-2">
             <button
               onClick={() => setIsThoughtExpanded(!isThoughtExpanded)}
@@ -54,8 +54,10 @@ export function ChatMessage({ message, thoughtUpdate }: ChatMessageProps) {
             
             {isThoughtExpanded && (
               <div className="mt-2 p-3 bg-blue-100 rounded-md animate-fadeIn">
-                {/* Display content in the expander for thought updates */}
-                <p className="text-sm text-gray-700">{thoughtUpdate}</p>
+                {/* Display all thought updates in the expander */}
+                {thoughtUpdates.map((update, index) => (
+                  <p key={index} className="text-sm text-gray-700">{update}</p>
+                ))}
               </div>
             )}
           </div>
