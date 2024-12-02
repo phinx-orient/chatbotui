@@ -9,7 +9,7 @@ function App() {
     <div className="min-h-screen bg-gray-100 flex flex-col"> 
       <div className="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden flex flex-col flex-grow"> 
         <div className="bg-blue-600 p-4">
-          <h1 className="text-white text-xl font-semibold">Neuron Ba Miền</h1>
+          <h1 className="text-white text-xl font-semibold">Neurond Ba Miền</h1>
         </div>
         
         <ChatContainer messages={messages} />

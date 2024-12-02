@@ -5,10 +5,10 @@ import { User } from 'lucide-react';
 
 interface ChatMessageProps {
   message: Message;
+  thoughtUpdate?: string; // Optional prop for thought updates
 }
-// ... existing imports ...
 
-export function ChatMessage({ message }: ChatMessageProps) {
+export function ChatMessage({ message, thoughtUpdate }: ChatMessageProps) {
   const [isThoughtExpanded, setIsThoughtExpanded] = useState(false);
   const isBot = message.role === 'assistant';
 
@@ -28,11 +28,12 @@ export function ChatMessage({ message }: ChatMessageProps) {
       
       <div className="flex-1">
         <div className="prose max-w-none">
+          {/* Always display message.content */}
           <p className="text-gray-800">{message.content}</p>
           <p className="text-sm text-gray-500">{message.type}</p>
         </div>
         
-        {isBot && message.type === "thought_update" && (
+        {isBot && thoughtUpdate && (
           <div className="mt-2">
             <button
               onClick={() => setIsThoughtExpanded(!isThoughtExpanded)}
@@ -53,7 +54,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
             
             {isThoughtExpanded && (
               <div className="mt-2 p-3 bg-blue-100 rounded-md animate-fadeIn">
-                <p className="text-sm text-gray-700">{message.type}</p>
+                {/* Display content in the expander for thought updates */}
+                <p className="text-sm text-gray-700">{thoughtUpdate}</p>
               </div>
             )}
           </div>
