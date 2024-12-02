@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
+// src/components/ChatMessage.tsx
+import React from 'react';
 import { Message } from '../types/chat';
-import { Bot, ChevronDown, ChevronUp } from 'lucide-react';
+import { Bot } from 'lucide-react';
 import { User } from 'lucide-react'; 
 
 interface ChatMessageProps {
   message: Message;
-  thoughtUpdates?: string[]; // Array of thought updates
 }
 
-export function ChatMessage({ message, thoughtUpdates }: ChatMessageProps) {
-  const [isThoughtExpanded, setIsThoughtExpanded] = useState(false);
+export function ChatMessage({ message }: ChatMessageProps) {
   const isBot = message.role === 'assistant';
 
   return (
@@ -32,36 +31,6 @@ export function ChatMessage({ message, thoughtUpdates }: ChatMessageProps) {
           <p className="text-gray-800">{message.content}</p>
           <p className="text-sm text-gray-500">{message.type}</p>
         </div>
-        
-        {isBot && thoughtUpdates && thoughtUpdates.length > 0 && (
-          <div className="mt-2">
-            <button
-              onClick={() => setIsThoughtExpanded(!isThoughtExpanded)}
-              className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 transition-colors duration-200"
-            >
-              {isThoughtExpanded ? (
-                <>
-                  <ChevronUp className="w-4 h-4" />
-                  Hide thought process
-                </>
-              ) : (
-                <>
-                  <ChevronDown className="w-4 h-4" />
-                  Show thought process
-                </>
-              )}
-            </button>
-            
-            {isThoughtExpanded && (
-              <div className="mt-2 p-3 bg-blue-100 rounded-md animate-fadeIn">
-                {/* Display all thought updates in the expander */}
-                {thoughtUpdates.map((update, index) => (
-                  <p key={index} className="text-sm text-gray-700">{update}</p>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );

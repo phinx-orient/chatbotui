@@ -1,13 +1,21 @@
+// src/hooks/useChat.ts
 import { useState, useCallback, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid"; // Import UUID package
 import { Message } from "../types/chat";
 import { WebSocketService } from "../services/socket";
 
 export function useChat() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const webSocketService = WebSocketService.getInstance(
-    "defaultConversationId"
-  );
 
+  const existingConversationId = sessionStorage.getItem("conversationId");
+
+  const conversationId = existingConversationId || uuidv4(); // Use existing or generate a new UUID
+  if (!existingConversationId) {
+    sessionStorage.setItem("conversationId", conversationId); // Store the new UUID in sessionStorage
+  }
+
+  const webSocketService = WebSocketService.getInstance(conversationId); // Use the UUID for the WebSocket connection
+  console.log(`conversationId: ${conversationId}`);
   useEffect(() => {
     // Set up WebSocket listener
     webSocketService.onMessage(handleIncomingMessage);
@@ -18,9 +26,10 @@ export function useChat() {
   }, [webSocketService]);
 
   const sendMessage = useCallback(
-    (content: string, conversationId: string) => {
+    (content: string) => {
+      // Removed conversationId parameter
       const userMessage: Message = {
-        conversationId: Date.now().toString(),
+        conversationId: conversationId, // Use the generated UUID
         role: "user",
         content,
         type: "user_response",
@@ -39,7 +48,7 @@ export function useChat() {
       // Update state with the user message
       setMessages((prevMessages) => [...prevMessages, userMessage]);
     },
-    [webSocketService]
+    [webSocketService, conversationId] // Added conversationId to dependencies
   );
 
   const handleIncomingMessage = (data: any) => {
