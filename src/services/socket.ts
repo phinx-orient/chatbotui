@@ -22,6 +22,8 @@ export class WebSocketService {
 
     this.socket.onclose = (event) => {
       console.log("WebSocket connection closed:", event);
+      // Attempt to reconnect after a delay
+      setTimeout(() => this.connect(conversationId), 1000); // Reconnect after 1 second
     };
 
     this.socket.onerror = (error) => {
