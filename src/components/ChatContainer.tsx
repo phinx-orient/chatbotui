@@ -23,6 +23,9 @@ export function ChatContainer({ messages }: ChatContainerProps) {
       chatMessages.push({ message, thoughtUpdates });
       // Reset thought updates for the next bot response
       thoughtUpdates = [];
+    } else if (message.type === "user_response") {
+      // Add user message with empty thought updates
+      chatMessages.push({ message, thoughtUpdates: [] });
     }
   });
 
