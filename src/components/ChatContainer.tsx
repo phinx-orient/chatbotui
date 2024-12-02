@@ -14,16 +14,22 @@ export function ChatContainer({ messages }: ChatContainerProps) {
         if (message.type === "bot_response") {
           // Render bot response normally
           return (
-            <ChatMessage key={message.id} message={message} />
+            <ChatMessage key={message.conversationId} message={message} />
           );
         }
         return null; // Ensure to return null for other message types
       })}
-        {thoughtUpdates.length > 0 && (
-        // Replace ThoughtUpdateContainer with ChatMessage for thought updates
-        thoughtUpdates.map((update) => (
-          <ChatMessage key={update.id} message={update} />
-        ))
+      {thoughtUpdates.length > 0 && (
+        // Display all thought updates in a single ChatMessage container
+        <ChatMessage 
+          key="thought-updates" 
+          message={{ 
+            conversationId: 'thought-update', 
+            content: 'Thought Updates', 
+            type: 'thought_update', 
+            role: "assistant" // Combine thoughts
+          }} 
+        />
       )}
     </div>
   );

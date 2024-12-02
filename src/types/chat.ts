@@ -1,9 +1,8 @@
 export interface Message {
-  id: string;
+  conversationId: string;
   content: string;
   role: "user" | "assistant";
-  thought?: string;
-  type: "thought_update" | "bot_response"; // Add this line
+  type: "thought_update" | "bot_response" | "user_response"; // Add this line
 }
 
 export interface ChatState {

@@ -6,6 +6,7 @@ import { User } from 'lucide-react';
 interface ChatMessageProps {
   message: Message;
 }
+// ... existing imports ...
 
 export function ChatMessage({ message }: ChatMessageProps) {
   const [isThoughtExpanded, setIsThoughtExpanded] = useState(false);
@@ -31,7 +32,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
           <p className="text-sm text-gray-500">{message.type}</p>
         </div>
         
-        {isBot && message.thought && (
+        {isBot && message.type === "thought_update" && (
           <div className="mt-2">
             <button
               onClick={() => setIsThoughtExpanded(!isThoughtExpanded)}
@@ -52,7 +53,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
             
             {isThoughtExpanded && (
               <div className="mt-2 p-3 bg-blue-100 rounded-md animate-fadeIn">
-                <p className="text-sm text-gray-700">{message.thought}</p>
+                <p className="text-sm text-gray-700">{message.type}</p>
               </div>
             )}
           </div>

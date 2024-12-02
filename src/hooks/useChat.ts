@@ -20,10 +20,10 @@ export function useChat() {
   const sendMessage = useCallback(
     (content: string, conversationId: string) => {
       const userMessage: Message = {
-        id: Date.now().toString(),
+        conversationId: Date.now().toString(),
         role: "user",
         content,
-        type: "bot_response",
+        type: "user_response",
       };
 
       // Send message to WebSocket
@@ -46,10 +46,9 @@ export function useChat() {
     // Ensure data has the expected structure
     if (data && data.role) {
       const incomingMessage: Message = {
-        id: Date.now().toString(),
+        conversationId: data.conversationId,
         role: data.role,
         content: data.content || "", // Default to empty string if content is not provided
-        thought: data.thought || undefined, // Handle optional thought
         type: data.type || "bot_response", // Default type if not provided
       };
 
