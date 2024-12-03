@@ -2,11 +2,21 @@
 import { Message } from '../types/chat';
 import { Bot } from 'lucide-react';
 import { User } from 'lucide-react'; 
-import ReactMarkdown from 'react-markdown'; // Import ReactMarkdown for rendering markdown
+import ReactMarkdown, { Components } from 'react-markdown'; // Import ReactMarkdown for rendering markdown
+
 
 interface ChatMessageProps {
   message: Message;
 }
+
+// Custom link renderer for ReactMarkdown
+const renderers: Components = {
+  a: ({ href, children, ...props }) => (
+    <a href={href} className="text-blue-500 hover:underline" target="_blank" rel="noopener noreferrer" {...props}>
+      {children}
+    </a>
+  ),
+};
 
 export function ChatMessage({ message }: ChatMessageProps) {
   const isBot = message.role === 'assistant';
@@ -27,8 +37,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
       
       <div className="flex-1">
         <div className="prose max-w-none">
-          {/* Render message.content as markdown */}
-          <ReactMarkdown className="text-gray-800">{message.content}</ReactMarkdown>
+          {/* Render message.content as markdown with custom link renderer */}
+          <ReactMarkdown components={renderers} className="text-gray-800">{message.content}</ReactMarkdown>
           <p className="text-sm text-gray-500">{message.type}</p>
         </div>
       </div>
