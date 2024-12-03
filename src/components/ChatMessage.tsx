@@ -1,8 +1,8 @@
 // src/components/ChatMessage.tsx
-import React from 'react';
 import { Message } from '../types/chat';
 import { Bot } from 'lucide-react';
 import { User } from 'lucide-react'; 
+import ReactMarkdown from 'react-markdown'; // Import ReactMarkdown for rendering markdown
 
 interface ChatMessageProps {
   message: Message;
@@ -27,8 +27,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
       
       <div className="flex-1">
         <div className="prose max-w-none">
-          {/* Always display message.content */}
-          <p className="text-gray-800">{message.content}</p>
+          {/* Render message.content as markdown */}
+          <ReactMarkdown className="text-gray-800">{message.content}</ReactMarkdown>
           <p className="text-sm text-gray-500">{message.type}</p>
         </div>
       </div>
