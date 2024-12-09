@@ -9,7 +9,7 @@ export function useChat() {
 
   const existingConversationId = sessionStorage.getItem("conversationId");
 
-  const conversationId = existingConversationId || uuidv4(); // Use existing or generate a new UUID
+  const conversationId = existingConversationId || uuidv4();
   if (!existingConversationId) {
     sessionStorage.setItem("conversationId", conversationId); // Store the new UUID in sessionStorage
   }
@@ -17,7 +17,6 @@ export function useChat() {
   const webSocketService = WebSocketService.getInstance(conversationId); // Use the UUID for the WebSocket connection
   console.log(`conversationId: ${conversationId}`);
   useEffect(() => {
-    // Set up WebSocket listener
     webSocketService.onMessage(handleIncomingMessage);
 
     return () => {
@@ -29,7 +28,7 @@ export function useChat() {
     (content: string) => {
       // Removed conversationId parameter
       const userMessage: Message = {
-        conversationId: conversationId, // Use the generated UUID
+        conversationId: conversationId,
         role: "user",
         content,
         type: "user_response",
@@ -38,7 +37,7 @@ export function useChat() {
       // Send message to WebSocket
       webSocketService.sendMessage(
         JSON.stringify({
-          type: "bot_response",
+          type: "user_response",
           role: "assistant",
           content: `${content}`,
           conversationId,
@@ -52,19 +51,26 @@ export function useChat() {
   );
 
   const handleIncomingMessage = (data: any) => {
-    // Ensure data has the expected structure
-    if (data && data.role) {
-      const incomingMessage: Message = {
-        conversationId: data.conversationId,
-        role: data.role,
-        content: data.content || "", // Default to empty string if content is not provided
-        type: data.type || "bot_response", // Default type if not provided
-      };
+    try {
+      console.log("Raw incoming data:", data); // Log the raw incoming data
+      // data is an object of js
+      const parsedData = typeof data === "string" ? JSON.parse(data) : data; // Check if data is a string before parsing
 
-      // Update state with the incoming message
-      setMessages((prevMessages) => [...prevMessages, incomingMessage]);
-    } else {
-      console.error("Invalid message format:", data); // Log error for invalid data
+      if (parsedData && parsedData.role) {
+        const incomingMessage: Message = {
+          conversationId: parsedData.conversationId,
+          role: parsedData.role,
+          content: parsedData.content || "",
+          type: parsedData.type || "bot_response",
+        };
+
+        // Update state with the incoming message
+        setMessages((prevMessages) => [...prevMessages, incomingMessage]);
+      } else {
+        console.error("Invalid message format:", parsedData);
+      }
+    } catch (error) {
+      console.error("Error parsing incoming message:", error);
     }
   };
 
