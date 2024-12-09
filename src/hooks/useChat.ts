@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid"; // Import UUID package
 import { Message } from "../types/chat";
 import { WebSocketService } from "../services/socket";
-
+import axios from "axios";
 export function useChat() {
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -25,14 +25,16 @@ export function useChat() {
   }, [webSocketService]);
 
   const sendMessage = useCallback(
-    (content: string) => {
-      // Removed conversationId parameter
+    async (content: string) => {
       const userMessage: Message = {
         conversationId: conversationId,
         role: "user",
         content,
         type: "user_response",
       };
+
+      // Update state with the user message immediately
+      setMessages((prevMessages) => [...prevMessages, userMessage]);
 
       // Send message to WebSocket
       webSocketService.sendMessage(
@@ -44,8 +46,21 @@ export function useChat() {
         })
       );
 
-      // Update state with the user message
-      setMessages((prevMessages) => [...prevMessages, userMessage]);
+      const baseUrl = "http://localhost:8007/streaming"; // Endpoint URL
+
+      try {
+        // Construct the URL with query parameters
+        const url = `${baseUrl}?content=${encodeURIComponent(
+          content
+        )}&conversation_id=${encodeURIComponent(conversationId)}`;
+
+        // Make the POST request
+        const response = await axios.post(url);
+
+        console.log("Response:", response.data);
+      } catch (error) {
+        console.error("Error calling streaming endpoint:", error);
+      }
     },
     [webSocketService, conversationId] // Added conversationId to dependencies
   );
