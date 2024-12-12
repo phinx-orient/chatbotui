@@ -3,9 +3,6 @@ import { Message } from "../types/chat";
 export class WebSocketService {
   private socket!: WebSocket; // Ensure this is typed as WebSocket
   private static instance: WebSocketService;
-  private handleThoughtUpdate: (thought: string, messageId: string) => void =
-    () => {};
-  private handleBotResponse: (message: Message) => void = () => {};
   private messageHandler: (data: any) => void = () => {}; // Message handler
 
   private constructor(conversationId: string) {
@@ -14,7 +11,7 @@ export class WebSocketService {
   }
 
   private connect(conversationId: string): void {
-    this.socket = new WebSocket(`ws://localhost:8081/ws/${conversationId}`);
+    this.socket = new WebSocket(`ws://localhost:8001/ws/${conversationId}`);
 
     this.socket.onopen = () => {
       console.log("WebSocket connection established.");
@@ -23,7 +20,7 @@ export class WebSocketService {
     this.socket.onclose = (event) => {
       console.log("WebSocket connection closed:", event);
       // Attempt to reconnect after a delay
-      setTimeout(() => this.connect(conversationId), 1000); // Reconnect after 1 second
+      setTimeout(() => this.connect(conversationId), 100); // Reconnect after 0.1 second
     };
 
     this.socket.onerror = (error) => {
@@ -47,22 +44,12 @@ export class WebSocketService {
     this.messageHandler = handler; // Set the message handler
   }
 
-  public subscribeToThoughts(
-    callback: (thought: string, messageId: string) => void
-  ) {
-    this.handleThoughtUpdate = callback;
-  }
-
-  public subscribeToResponses(callback: (message: Message) => void) {
-    this.handleBotResponse = callback;
-  }
-
   public disconnect() {
     this.socket.close();
   }
 
   public sendMessage(message: string) {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+    if (this.socket.readyState === WebSocket.OPEN) {
       this.socket.send(message); // Ensure the socket is open before sending
     } else {
       console.error("WebSocket is not open. Cannot send message.");
