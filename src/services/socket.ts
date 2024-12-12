@@ -1,5 +1,3 @@
-import { Message } from "../types/chat";
-
 export class WebSocketService {
   private socket!: WebSocket; // Ensure this is typed as WebSocket
   private static instance: WebSocketService;
